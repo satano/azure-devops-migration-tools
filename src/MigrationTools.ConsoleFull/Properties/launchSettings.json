@@ -1,39 +1,51 @@
 {
-  "profiles": {
-    "empty": {
-      "commandName": "Project"
-    },
-    "Execute -noconfig": {
-      "commandName": "Project",
-      "commandLineArgs": "execute"
-    },
-    "execute": {
-      "commandName": "Project",
-      "commandLineArgs": "execute -c \"configuration-default.json\" --disableTelemetry"
-    },
-    "execute --help": {
-      "commandName": "Project",
-      "commandLineArgs": "execute --help"
-    },
-    "init Options-Basic": {
-      "commandName": "Project",
-      "commandLineArgs": "init --options Basic --overwrite -c configuration-basic.json "
-    },
-    "init Options-Reference": {
-      "commandName": "Project",
-      "commandLineArgs": "init --options Reference -c configuration-ref.json --overwrite"
-    },
-    "Upgrade": {
-      "commandName": "Project",
-      "commandLineArgs": "upgrade -c \"C:\\Users\\MartinHinshelwoodNKD\\source\\Danlewis3.json\" --debugTrace"
-    },
-    "Execute Classic": {
-      "commandName": "Project",
-      "commandLineArgs": "execute -c \"configuration-classic.json\""
-    },
-    "Builder with Config": {
-      "commandName": "Project",
-      "commandLineArgs": "builder -c \"configuration.json\""
+    "profiles": {
+        "export users": {
+            "commandName": "Project",
+            "commandLineArgs": "execute --config \"d:/src/tfs/cenekon/configuration-export-users.json\" --disableTelemetry"
+        },
+        "migrate backlog Cenekon": {
+            "commandName": "Project",
+            "commandLineArgs": "execute --config \"d:/src/tfs/cenekon/configuration-backlog-cenekon.json\" --disableTelemetry"
+        },
+        "migrate backlog Scrum Masters": {
+            "commandName": "Project",
+            "commandLineArgs": "execute --config \"d:/src/tfs/cenekon/configuration-backlog-scrum-masters.json\" --disableTelemetry"
+        },
+        "empty": {
+            "commandName": "Project"
+        },
+        "Execute -noconfig": {
+            "commandName": "Project",
+            "commandLineArgs": "execute"
+        },
+        "execute": {
+            "commandName": "Project",
+            "commandLineArgs": "execute -c \"configuration-default.json\" --disableTelemetry"
+        },
+        "execute --help": {
+            "commandName": "Project",
+            "commandLineArgs": "execute --help"
+        },
+        "init Options-Basic": {
+            "commandName": "Project",
+            "commandLineArgs": "init --options Basic --overwrite -c configuration-basic.json "
+        },
+        "init Options-Reference": {
+            "commandName": "Project",
+            "commandLineArgs": "init --options Reference -c configuration-ref.json --overwrite"
+        },
+        "Upgrade": {
+            "commandName": "Project",
+            "commandLineArgs": "upgrade -c \"C:\\Users\\MartinHinshelwoodNKD\\source\\Danlewis3.json\" --debugTrace"
+        },
+        "Execute Classic": {
+            "commandName": "Project",
+            "commandLineArgs": "execute -c \"configuration-classic.json\""
+        },
+        "Builder with Config": {
+            "commandName": "Project",
+            "commandLineArgs": "builder -c \"configuration.json\""
+        }
     }
-  }
 }
