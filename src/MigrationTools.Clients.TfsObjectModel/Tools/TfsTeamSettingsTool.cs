@@ -377,6 +377,8 @@ namespace MigrationTools.Tools
                 if (userMapping.TryGetValue(sourceName, out var mappedName) && !string.IsNullOrEmpty(mappedName))
                 {
                     targetIdentity = MatchIdentity(mappedName, identityCache);
+                    // Custom mapping of our titles.
+                    targetIdentity ??= MatchIdentity("Ing. " + mappedName, identityCache);
                 }
             }
 
