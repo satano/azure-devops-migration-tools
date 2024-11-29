@@ -28,9 +28,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Host\**" />
     <Compile Remove="Infrastructure\**" />
+    <EmbeddedResource Remove="Host\**" />
     <EmbeddedResource Remove="Infrastructure\**" />
+    <None Remove="Host\**" />
     <None Remove="Infrastructure\**" />
+    <NuGetAuditSuppress Remove="Host\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -67,10 +71,6 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Host\" />
   </ItemGroup>
 
 </Project>
