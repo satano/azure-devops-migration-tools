@@ -59,9 +59,9 @@ namespace MigrationTools
 
             if (context == null) throw new ArgumentNullException(nameof(context));
             var workItem = (WorkItem)context.internalObject;
-            if ((string)workItem.Fields["System.ChangedBy"].Value == string.Empty)
+            if ((string)workItem.Fields[FieldNames.System.ChangedBy].Value == string.Empty)
             {
-                workItem.Fields["System.ChangedBy"].Value = "Migration";
+                workItem.Fields[FieldNames.System.ChangedBy].Value = "Migration";
             }
             Log.Debug("TfsExtensions::SaveToAzureDevOps: ChangedBy: {ChangedBy}, AuthorisedBy: {AuthorizedIdentity}", workItem.ChangedBy, workItem.Store.TeamProjectCollection.AuthorizedIdentity.DisplayName);
             var fails = workItem.Validate();

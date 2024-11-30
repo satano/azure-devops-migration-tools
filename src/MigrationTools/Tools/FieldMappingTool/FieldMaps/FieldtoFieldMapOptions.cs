@@ -18,8 +18,8 @@ namespace MigrationTools.Tools
         public void SetExampleConfigDefaults()
         {
             ApplyTo = new List<string>() { "*" };
-            sourceField = "System.StackRank";
-            targetField = "System.Rank";
+            sourceField = FieldNames.System.StackRank;
+            targetField = FieldNames.System.Rank;
             defaultValue = "1000";
         }
     }

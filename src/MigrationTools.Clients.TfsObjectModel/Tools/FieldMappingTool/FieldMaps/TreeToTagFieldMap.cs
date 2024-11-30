@@ -31,7 +31,7 @@ namespace MigrationTools.FieldMaps.AzureDevops.ObjectModel
 
             if (Config.timeTravel > 0)
             {
-                value = (string)source.Revisions[source.Revision - Config.timeTravel].Fields["System.AreaPath"].Value;
+                value = (string)source.Revisions[source.Revision - Config.timeTravel].Fields[FieldNames.System.AreaPath].Value;
             }
             else
             {

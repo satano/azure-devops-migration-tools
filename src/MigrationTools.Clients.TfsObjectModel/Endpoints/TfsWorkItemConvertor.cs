@@ -12,11 +12,11 @@ namespace MigrationTools.Endpoints
         public void MapWorkItemtoWorkItemData(WorkItemData context_wid, WorkItem context_wi, Dictionary<string, FieldItem> fieldsOfRevision = null)
         {
             context_wid.Id = context_wi.Id.ToString();
-            context_wid.Title = fieldsOfRevision != null ? fieldsOfRevision["System.Title"].Value.ToString() : context_wi.Title;
+            context_wid.Title = fieldsOfRevision != null ? fieldsOfRevision[FieldNames.System.Title].Value.ToString() : context_wi.Title;
             context_wid.ProjectName = context_wi.Project?.Name;
-            context_wid.Type = fieldsOfRevision != null ? fieldsOfRevision["System.WorkItemType"].Value.ToString() : context_wi.Type.Name;
-            context_wid.Rev = fieldsOfRevision != null ? (int)fieldsOfRevision["System.Rev"].Value : context_wi.Rev;
-            context_wid.ChangedDate = fieldsOfRevision != null ? (DateTime)fieldsOfRevision["System.ChangedDate"].Value : context_wi.ChangedDate;
+            context_wid.Type = fieldsOfRevision != null ? fieldsOfRevision[FieldNames.System.WorkItemType].Value.ToString() : context_wi.Type.Name;
+            context_wid.Rev = fieldsOfRevision != null ? (int)fieldsOfRevision[FieldNames.System.Rev].Value : context_wi.Rev;
+            context_wid.ChangedDate = fieldsOfRevision != null ? (DateTime)fieldsOfRevision[FieldNames.System.ChangedDate].Value : context_wi.ChangedDate;
 
             var fieldItems = GetFieldItems(context_wi.Fields);
             if (fieldsOfRevision != null)
@@ -46,10 +46,10 @@ namespace MigrationTools.Endpoints
             {
                 WorkItemId = x.WorkItem.Id,
                 Index = x.Index,
-                Number = (int)x.Fields["System.Rev"].Value,
-                ChangedDate = (DateTime)x.Fields["System.ChangedDate"].Value,
-                OriginalChangedDate = (DateTime)x.Fields["System.ChangedDate"].Value,
-                Type = x.Fields["System.WorkItemType"].Value as string,
+                Number = (int)x.Fields[FieldNames.System.Rev].Value,
+                ChangedDate = (DateTime)x.Fields[FieldNames.System.ChangedDate].Value,
+                OriginalChangedDate = (DateTime)x.Fields[FieldNames.System.ChangedDate].Value,
+                Type = x.Fields[FieldNames.System.WorkItemType].Value as string,
                 Fields = GetFieldItems(x.Fields)
             }).ToList();
 

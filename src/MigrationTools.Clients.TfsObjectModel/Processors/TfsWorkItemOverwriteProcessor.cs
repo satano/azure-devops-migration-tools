@@ -69,14 +69,14 @@ namespace MigrationTools.Processors
                 {
                     Log.LogInformation("...Exists");
                     TfsExtensions.ToWorkItem(targetFound).Open();
-                   CommonTools.FieldMappingTool.ApplyFieldMappings(sourceWI, targetFound);
+                    CommonTools.FieldMappingTool.ApplyFieldMappings(sourceWI, targetFound);
                     CommonTools.WorkItemEmbededLink.Enrich(this, null, targetFound);
                     CommonTools.EmbededImages.FixEmbededImages(this, sourceWI, targetFound);
                     if (TfsExtensions.ToWorkItem(targetFound).IsDirty)
                     {
                         try
                         {
-                            targetFound.ToWorkItem().Fields["System.ChangedBy"].Value = "Migration";
+                            targetFound.ToWorkItem().Fields[FieldNames.System.ChangedBy].Value = "Migration";
                             TfsExtensions.SaveToAzureDevOps(targetFound);
                             Log.LogInformation("          Updated");
                         }

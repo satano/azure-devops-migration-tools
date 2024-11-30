@@ -527,10 +527,10 @@ namespace MigrationTools.Tools
             switch (nodeType)
             {
                 case TfsNodeStructureType.Iteration:
-                    fieldName = "System.IterationPath";
+                    fieldName = FieldNames.System.IterationPath;
                     break;
                 case TfsNodeStructureType.Area:
-                    fieldName = "System.AreaPath";
+                    fieldName = FieldNames.System.AreaPath;
                     break;
 
             }
@@ -729,10 +729,10 @@ namespace MigrationTools.Tools
                 TfsNodeStructureType structureType;
                 switch (fieldType)
                 {
-                    case "System.AreaPath":
+                    case FieldNames.System.AreaPath:
                         structureType = TfsNodeStructureType.Area;
                         break;
-                    case "System.IterationPath":
+                    case FieldNames.System.IterationPath:
                         structureType = TfsNodeStructureType.Iteration;
                         break;
                     default:

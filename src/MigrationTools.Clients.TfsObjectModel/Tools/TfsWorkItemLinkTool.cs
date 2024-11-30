@@ -22,7 +22,7 @@ namespace MigrationTools.Tools
 
         }
 
-        public  int Enrich(TfsProcessor processor, WorkItemData sourceWorkItemLinkStart, WorkItemData targetWorkItemLinkStart)
+        public int Enrich(TfsProcessor processor, WorkItemData sourceWorkItemLinkStart, WorkItemData targetWorkItemLinkStart)
         {
             if (sourceWorkItemLinkStart is null)
             {
@@ -100,7 +100,7 @@ namespace MigrationTools.Tools
 
         public void MigrateSharedSteps(TfsProcessor processor, WorkItemData wiSourceL, WorkItemData wiTargetL)
         {
-            const string microsoftVstsTcmSteps = "Microsoft.VSTS.TCM.Steps";
+            const string microsoftVstsTcmSteps = FieldNames.Microsoft.VstsTcmSteps;
             var oldSteps = wiTargetL.ToWorkItem().Fields[microsoftVstsTcmSteps].Value.ToString();
             var newSteps = oldSteps;
 
@@ -122,7 +122,7 @@ namespace MigrationTools.Tools
 
                     // DevOps doesn't seem to take impersonation very nicely here - as of 13.05.22 the following line would get you an error:
                     // System.FormatException: The string 'Microsoft.TeamFoundation.WorkItemTracking.Common.ServerDefaultFieldValue' is not a valid AllXsd value.
-                    // target.ToWorkItem().Fields["System.ModifiedBy"].Value = "Migration";
+                    // target.ToWorkItem().Fields[FieldNames.SystemModifiedBy].Value = "Migration";
                 }
             }
 
@@ -134,12 +134,12 @@ namespace MigrationTools.Tools
 
         public void MigrateSharedParameters(TfsProcessor processor, WorkItemData wiSourceL, WorkItemData wiTargetL)
         {
-            const string microsoftVstsTcmLocalDataSource = "Microsoft.VSTS.TCM.LocalDataSource";
+            const string microsoftVstsTcmLocalDataSource = FieldNames.Microsoft.VstsTcmLocalDataSource;
             var oldSteps = wiTargetL.ToWorkItem().Fields[microsoftVstsTcmLocalDataSource].Value.ToString();
             var newSteps = oldSteps;
 
             var sourceSharedParametersLinks = wiSourceL.ToWorkItem().Links.OfType<RelatedLink>()
-                .Where(x => x.LinkTypeEnd.ImmutableName == "Microsoft.VSTS.TestCase.SharedParameterReferencedBy-Reverse").ToList();
+                .Where(x => x.LinkTypeEnd.ImmutableName == FieldNames.Microsoft.VstsTestCaseSharedParameterReferencedBy_Reverse).ToList();
             var sourceSharedParameters =
                 sourceSharedParametersLinks.Select(x => processor.Source.WorkItems.GetWorkItem(x.RelatedWorkItemId.ToString()));
 
@@ -180,7 +180,7 @@ namespace MigrationTools.Tools
 
                 // DevOps doesn't seem to take impersonation very nicely here - as of 13.05.22 the following line would get you an error:
                 // System.FormatException: The string 'Microsoft.TeamFoundation.WorkItemTracking.Common.ServerDefaultFieldValue' is not a valid AllXsd value.
-                // target.ToWorkItem().Fields["System.ModifiedBy"].Value = "Migration";
+                // target.ToWorkItem().Fields[FieldNames.SystemModifiedBy].Value = "Migration";
                 if (Options.SaveAfterEachLinkIsAdded)
                 {
                     try
@@ -289,34 +289,34 @@ namespace MigrationTools.Tools
 
                         WorkItemLinkTypeEnd linkTypeEnd = client.Store.WorkItemLinkTypes.LinkTypeEnds[rl.LinkTypeEnd.ImmutableName];
                         RelatedLink newRl = new RelatedLink(linkTypeEnd, int.Parse(wiTargetR.Id));
-                        if (linkTypeEnd.ImmutableName == "System.LinkTypes.Hierarchy-Forward")
+                        if (linkTypeEnd.ImmutableName == FieldNames.System.LinkTypesHierarchy_Forward)
                         {
                             var potentialParentConflictLink = ( // TF201036: You cannot add a Child link between work items xxx and xxx because a work item can have only one Parent link.
                                     from Link l in wiTargetR.ToWorkItem().Links
                                     where l is RelatedLink
-                                        && ((RelatedLink)l).LinkTypeEnd.ImmutableName == "System.LinkTypes.Hierarchy-Reverse"
+                                        && ((RelatedLink)l).LinkTypeEnd.ImmutableName == FieldNames.System.LinkTypesHierarchy_Reverse
                                     select (RelatedLink)l).SingleOrDefault();
                             if (potentialParentConflictLink != null)
                             {
                                 wiTargetR.ToWorkItem().Links.Remove(potentialParentConflictLink);
                             }
-                            linkTypeEnd = ((TfsWorkItemMigrationClient)processor.Target.WorkItems).Store.WorkItemLinkTypes.LinkTypeEnds["System.LinkTypes.Hierarchy-Reverse"];
+                            linkTypeEnd = ((TfsWorkItemMigrationClient)processor.Target.WorkItems).Store.WorkItemLinkTypes.LinkTypeEnds[FieldNames.System.LinkTypesHierarchy_Reverse];
                             RelatedLink newLl = new RelatedLink(linkTypeEnd, int.Parse(wiTargetL.Id));
                             wiTargetR.ToWorkItem().Links.Add(newLl);
 
                             // DevOps doesn't seem to take impersonation very nicely here - as of 13.05.22 the following line would get you an error:
                             // System.FormatException: The string 'Microsoft.TeamFoundation.WorkItemTracking.Common.ServerDefaultFieldValue' is not a valid AllXsd value.
-                            // wiTargetR.ToWorkItem().Fields["System.ModifiedBy"].Value = "Migration";
+                            // wiTargetR.ToWorkItem().Fields[FieldNames.SystemModifiedBy].Value = "Migration";
                             wiTargetR.SaveToAzureDevOps();
                         }
                         else
                         {
-                            if (linkTypeEnd.ImmutableName == "System.LinkTypes.Hierarchy-Reverse")
+                            if (linkTypeEnd.ImmutableName == FieldNames.System.LinkTypesHierarchy_Reverse)
                             {
                                 var potentialParentConflictLink = ( // TF201065: You can not add a Parent link to this work item because a work item can have only one link of this type.
                                     from Link l in wiTargetL.ToWorkItem().Links
                                     where l is RelatedLink
-                                        && ((RelatedLink)l).LinkTypeEnd.ImmutableName == "System.LinkTypes.Hierarchy-Reverse"
+                                        && ((RelatedLink)l).LinkTypeEnd.ImmutableName == FieldNames.System.LinkTypesHierarchy_Reverse
                                     select (RelatedLink)l).SingleOrDefault();
                                 if (potentialParentConflictLink != null)
                                 {
@@ -327,7 +327,7 @@ namespace MigrationTools.Tools
 
                             // DevOps doesn't seem to take impersonation very nicely here - as of 13.05.22 the following line would get you an error:
                             // System.FormatException: The string 'Microsoft.TeamFoundation.WorkItemTracking.Common.ServerDefaultFieldValue' is not a valid AllXsd value.
-                            // wiTargetL.ToWorkItem().Fields["System.ModifiedBy"].Value = "Migration";
+                            // wiTargetL.ToWorkItem().Fields[FieldNames.SystemModifiedBy].Value = "Migration";
                             if (Options.SaveAfterEachLinkIsAdded)
                             {
                                 wiTargetL.SaveToAzureDevOps();
@@ -421,7 +421,7 @@ namespace MigrationTools.Tools
 
             // DevOps doesn't seem to take impersonation very nicely here - as of 13.05.22 the following line would get you an error:
             // System.FormatException: The string 'Microsoft.TeamFoundation.WorkItemTracking.Common.ServerDefaultFieldValue' is not a valid AllXsd value.
-            // target.ToWorkItem().Fields["System.ModifiedBy"].Value = "Migration";
+            // target.ToWorkItem().Fields[FieldNames.SystemModifiedBy].Value = "Migration";
             if (Options.SaveAfterEachLinkIsAdded)
             {
                 target.SaveToAzureDevOps();

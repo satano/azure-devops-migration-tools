@@ -1,43 +1,31 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.TeamFoundation.Common;
-using Microsoft.TeamFoundation.TestManagement;
 using Microsoft.TeamFoundation.WorkItemTracking.Client;
-using Microsoft.TeamFoundation.WorkItemTracking.Proxy;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
 using Microsoft.VisualStudio.Services.WebApi.Patch;
 using Microsoft.VisualStudio.Services.WebApi.Patch.Json;
-using MigrationTools;
-using MigrationTools.Clients;
-using MigrationTools._EngineV1.Configuration;
-using MigrationTools._EngineV1.Configuration.Processing;
-using MigrationTools._EngineV1.Containers;
 using MigrationTools._EngineV1.DataContracts;
-
+using MigrationTools.Clients;
 using MigrationTools.DataContracts;
 using MigrationTools.Enrichers;
 using MigrationTools.Processors.Infrastructure;
 using MigrationTools.Services;
 using MigrationTools.Tools;
-using Newtonsoft.Json.Linq;
 using Serilog.Context;
 using Serilog.Events;
 using ILogger = Serilog.ILogger;
-using MigrationTools.Tools.Interfaces;
 
 namespace MigrationTools.Processors
 {
@@ -362,13 +350,13 @@ namespace MigrationTools.Processors
                 activity?.SetTag("http.response.status_code", "200");
                 if (Options.UpdateCreatedBy)
                 {
-                    newwit.Fields["System.CreatedBy"].Value = currentRevisionWorkItem.ToWorkItem().Revisions[0].Fields["System.CreatedBy"].Value;
-                    workItemLog.Debug("Setting 'System.CreatedBy'={SystemCreatedBy}", currentRevisionWorkItem.ToWorkItem().Revisions[0].Fields["System.CreatedBy"].Value);
+                    newwit.Fields[FieldNames.System.CreatedBy].Value = currentRevisionWorkItem.ToWorkItem().Revisions[0].Fields[FieldNames.System.CreatedBy].Value;
+                    workItemLog.Debug("Setting 'System.CreatedBy'={SystemCreatedBy}", currentRevisionWorkItem.ToWorkItem().Revisions[0].Fields[FieldNames.System.CreatedBy].Value);
                 }
                 if (Options.UpdateCreatedDate)
                 {
-                    newwit.Fields["System.CreatedDate"].Value = currentRevisionWorkItem.ToWorkItem().Revisions[0].Fields["System.CreatedDate"].Value;
-                    workItemLog.Debug("Setting 'System.CreatedDate'={SystemCreatedDate}", currentRevisionWorkItem.ToWorkItem().Revisions[0].Fields["System.CreatedDate"].Value);
+                    newwit.Fields[FieldNames.System.CreatedDate].Value = currentRevisionWorkItem.ToWorkItem().Revisions[0].Fields[FieldNames.System.CreatedDate].Value;
+                    workItemLog.Debug("Setting 'System.CreatedDate'={SystemCreatedDate}", currentRevisionWorkItem.ToWorkItem().Revisions[0].Fields[FieldNames.System.CreatedDate].Value);
                 }
                 return newwit.AsWorkItemData();
             }
@@ -378,29 +366,29 @@ namespace MigrationTools.Processors
         {
             _ignore = new List<string>
             {
-                "System.Rev",
-                "System.AreaId",
-                "System.IterationId",
-                "System.Id",
-                "System.Parent",
-                "System.RevisedDate",
-                "System.AuthorizedAs",
-                "System.AttachedFileCount",
-                "System.TeamProject",
-                "System.NodeName",
-                "System.RelatedLinkCount",
-                "System.WorkItemType",
-                "Microsoft.VSTS.Common.StateChangeDate",
-                "System.ExternalLinkCount",
-                "System.HyperLinkCount",
-                "System.Watermark",
-                "System.AuthorizedDate",
-                "System.BoardColumn",
-                "System.BoardColumnDone",
-                "System.BoardLane",
-                "SLB.SWT.DateOfClientFeedback",
-                "System.CommentCount",
-                "System.RemoteLinkCount"
+                FieldNames.System.Rev,
+                FieldNames.System.AreaId,
+                FieldNames.System.IterationId,
+                FieldNames.System.Id,
+                FieldNames.System.Parent,
+                FieldNames.System.RevisedDate,
+                FieldNames.System.AuthorizedAs,
+                FieldNames.System.AttachedFileCount,
+                FieldNames.System.TeamProject,
+                FieldNames.System.NodeName,
+                FieldNames.System.RelatedLinkCount,
+                FieldNames.System.WorkItemType,
+                FieldNames.Microsoft.VstsCommonStateChangeDate,
+                FieldNames.System.ExternalLinkCount,
+                FieldNames.System.HyperLinkCount,
+                FieldNames.System.Watermark,
+                FieldNames.System.AuthorizedDate,
+                FieldNames.System.BoardColumn,
+                FieldNames.System.BoardColumnDone,
+                FieldNames.System.BoardLane,
+                FieldNames.Slb.SwtDateOfClientFeedback,
+                FieldNames.System.CommentCount,
+                FieldNames.System.RemoteLinkCount,
             };
         }
 
@@ -417,14 +405,14 @@ namespace MigrationTools.Processors
             }
 
             newWorkItem.Title = oldWorkItem.Title;
-            if (newWorkItem.Fields.Contains("Microsoft.VSTS.Common.ClosedDate") && newWorkItem.Fields["Microsoft.VSTS.Common.ClosedDate"].IsEditable)
+            if (newWorkItem.Fields.Contains(FieldNames.Microsoft.VstsCommonClosedDate) && newWorkItem.Fields[FieldNames.Microsoft.VstsCommonClosedDate].IsEditable)
             {
-                newWorkItem.Fields["Microsoft.VSTS.Common.ClosedDate"].Value = oldWorkItem.Fields["Microsoft.VSTS.Common.ClosedDate"].Value;
+                newWorkItem.Fields[FieldNames.Microsoft.VstsCommonClosedDate].Value = oldWorkItem.Fields[FieldNames.Microsoft.VstsCommonClosedDate].Value;
             }
             newWorkItem.State = oldWorkItem.State;
-            if (newWorkItem.Fields.Contains("Microsoft.VSTS.Common.ClosedDate") && newWorkItem.Fields["Microsoft.VSTS.Common.ClosedDate"].IsEditable)
+            if (newWorkItem.Fields.Contains(FieldNames.Microsoft.VstsCommonClosedDate) && newWorkItem.Fields[FieldNames.Microsoft.VstsCommonClosedDate].IsEditable)
             {
-                newWorkItem.Fields["Microsoft.VSTS.Common.ClosedDate"].Value = oldWorkItem.Fields["Microsoft.VSTS.Common.ClosedDate"].Value;
+                newWorkItem.Fields[FieldNames.Microsoft.VstsCommonClosedDate].Value = oldWorkItem.Fields[FieldNames.Microsoft.VstsCommonClosedDate].Value;
             }
             newWorkItem.Reason = oldWorkItem.Reason;
 
@@ -474,17 +462,17 @@ namespace MigrationTools.Processors
             switch (destType)
             {
                 case "Test Case":
-                    newWorkItem.Fields["Microsoft.VSTS.TCM.Steps"].Value = oldWorkItem.Fields["Microsoft.VSTS.TCM.Steps"].Value;
-                    newWorkItem.Fields["Microsoft.VSTS.Common.Priority"].Value =
-                        oldWorkItem.Fields["Microsoft.VSTS.Common.Priority"].Value;
+                    newWorkItem.Fields[FieldNames.Microsoft.VstsTcmSteps].Value = oldWorkItem.Fields[FieldNames.Microsoft.VstsTcmSteps].Value;
+                    newWorkItem.Fields[FieldNames.Microsoft.VstsCommonPriority].Value =
+                        oldWorkItem.Fields[FieldNames.Microsoft.VstsCommonPriority].Value;
                     break;
             }
 
-            if (newWorkItem.Fields.Contains("Microsoft.VSTS.Common.BacklogPriority")
-                && newWorkItem.Fields["Microsoft.VSTS.Common.BacklogPriority"].Value != null
-                && !IsNumeric(newWorkItem.Fields["Microsoft.VSTS.Common.BacklogPriority"].Value.ToString(),
+            if (newWorkItem.Fields.Contains(FieldNames.Microsoft.VstsCommonBacklogPriority)
+                && newWorkItem.Fields[FieldNames.Microsoft.VstsCommonBacklogPriority].Value != null
+                && !IsNumeric(newWorkItem.Fields[FieldNames.Microsoft.VstsCommonBacklogPriority].Value.ToString(),
                     NumberStyles.Any))
-                newWorkItem.Fields["Microsoft.VSTS.Common.BacklogPriority"].Value = 10;
+                newWorkItem.Fields[FieldNames.Microsoft.VstsCommonBacklogPriority].Value = 10;
 
             var description = new StringBuilder();
             description.Append(oldWorkItem.Description);
@@ -718,7 +706,7 @@ namespace MigrationTools.Processors
                         VssConnection connection = new VssConnection(collectionUri, new VssBasicCredential(string.Empty, token));
                         WorkItemTrackingHttpClient workItemTrackingClient = connection.GetClient<WorkItemTrackingHttpClient>();
                         JsonPatchDocument patchDocument = new JsonPatchDocument();
-                        DateTime changedDate = ((DateTime)currentRevisionWorkItem.Fields["System.ChangedDate"].Value).AddMilliseconds(-3);
+                        DateTime changedDate = ((DateTime)currentRevisionWorkItem.Fields[FieldNames.System.ChangedDate].Value).AddMilliseconds(-3);
 
                         patchDocument.Add(
                             new JsonPatchOperation()
@@ -733,7 +721,7 @@ namespace MigrationTools.Processors
                             {
                                 Operation = Operation.Add,
                                 Path = "/fields/System.State",
-                                Value = (string)currentRevisionWorkItem.Fields["System.State"].Value
+                                Value = (string)currentRevisionWorkItem.Fields[FieldNames.System.State].Value
                             }
                         );
                         patchDocument.Add(
@@ -741,7 +729,7 @@ namespace MigrationTools.Processors
                             {
                                 Operation = Operation.Add,
                                 Path = "/fields/System.Reason",
-                                Value = (string)currentRevisionWorkItem.Fields["System.Reason"].Value
+                                Value = (string)currentRevisionWorkItem.Fields[FieldNames.System.Reason].Value
                             }
                         );
                         patchDocument.Add(
@@ -757,7 +745,7 @@ namespace MigrationTools.Processors
                         {
                             Operation = Operation.Add,
                             Path = "/fields/System.ChangedBy",
-                            Value = currentRevisionWorkItem.Fields["System.ChangedBy"].Value.ToString()
+                            Value = currentRevisionWorkItem.Fields[FieldNames.System.ChangedBy].Value.ToString()
                         }
                         );
                         var result = workItemTrackingClient.UpdateWorkItemAsync(patchDocument, workItemId, bypassRules: true).Result;
@@ -781,9 +769,9 @@ namespace MigrationTools.Processors
                         }
                     }
                     // Impersonate revision author. Mapping will apply later and may change this.
-                    targetWorkItem.ToWorkItem().Fields["System.ChangedDate"].Value = revision.Fields["System.ChangedDate"].Value;
-                    targetWorkItem.ToWorkItem().Fields["System.ChangedBy"].Value = revision.Fields["System.ChangedBy"].Value.ToString();
-                    targetWorkItem.ToWorkItem().Fields["System.History"].Value = revision.Fields["System.History"].Value;
+                    targetWorkItem.ToWorkItem().Fields[FieldNames.System.ChangedDate].Value = revision.Fields[FieldNames.System.ChangedDate].Value;
+                    targetWorkItem.ToWorkItem().Fields[FieldNames.System.ChangedBy].Value = revision.Fields[FieldNames.System.ChangedBy].Value.ToString();
+                    targetWorkItem.ToWorkItem().Fields[FieldNames.System.History].Value = revision.Fields[FieldNames.System.History].Value;
 
                     // Todo: Ensure all field maps use WorkItemData.Fields to apply a correct mapping
                     CommonTools.FieldMappingTool.ApplyFieldMappings(currentRevisionWorkItem, targetWorkItem);
@@ -825,7 +813,7 @@ namespace MigrationTools.Processors
                 }
 
                 // Until here we impersonate the maker of the revisions. From here we act as ourselves to push the attachments and add the comment
-                targetWorkItem.ToWorkItem().Fields["System.ChangedBy"].Value = "Migration";
+                targetWorkItem.ToWorkItem().Fields[FieldNames.System.ChangedBy].Value = "Migration";
 
                 if (targetWorkItem != null)
                 {
@@ -834,7 +822,7 @@ namespace MigrationTools.Processors
                     {
                         ProcessWorkItemLinks(sourceWorkItem, targetWorkItem);
                         // The TFS client seems to plainly ignore the ChangedBy field when saving a link, so we need to put this back in place
-                        targetWorkItem.ToWorkItem().Fields["System.ChangedBy"].Value = "Migration";
+                        targetWorkItem.ToWorkItem().Fields[FieldNames.System.ChangedBy].Value = "Migration";
                     }
 
                     if (Options.GenerateMigrationComment)
@@ -882,13 +870,13 @@ namespace MigrationTools.Processors
 
         private void CheckClosedDateIsValid(WorkItemData sourceWorkItem, WorkItemData targetWorkItem)
         {
-            var closedDateField = "System.ClosedDate";
-            if (targetWorkItem.ToWorkItem().Fields.Contains("Microsoft.VSTS.Common.ClosedDate"))
+            var closedDateField = FieldNames.System.ClosedDate;
+            if (targetWorkItem.ToWorkItem().Fields.Contains(FieldNames.Microsoft.VstsCommonClosedDate))
             {
-                closedDateField = "Microsoft.VSTS.Common.ClosedDate";
+                closedDateField = FieldNames.Microsoft.VstsCommonClosedDate;
             }
             Log.LogDebug("CheckClosedDateIsValid::ClosedDate field is {closedDateField}", closedDateField);
-            if (targetWorkItem.ToWorkItem().Fields[closedDateField].Value == null && (targetWorkItem.ToWorkItem().Fields["System.State"].Value.ToString() == "Closed" || targetWorkItem.ToWorkItem().Fields["System.State"].Value.ToString() == "Done"))
+            if (targetWorkItem.ToWorkItem().Fields[closedDateField].Value == null && (targetWorkItem.ToWorkItem().Fields[FieldNames.System.State].Value.ToString() == "Closed" || targetWorkItem.ToWorkItem().Fields[FieldNames.System.State].Value.ToString() == "Done"))
             {
                 Log.LogWarning("The field {closedDateField} is set to Null and will revert to the current date on save! ", closedDateField);
                 Log.LogWarning("Source Closed Date [#{sourceId}][Rev{sourceRev}]: {sourceClosedDate} ", sourceWorkItem.ToWorkItem().Id, sourceWorkItem.ToWorkItem().Rev, sourceWorkItem.ToWorkItem().Fields[closedDateField].Value);
@@ -896,24 +884,23 @@ namespace MigrationTools.Processors
             if (!sourceWorkItem.ToWorkItem().Fields.Contains(closedDateField))
             {
                 Log.LogWarning("The ClosedDate field {closedDateField} on the Target does not exist in the source! You can fix this with a mapping!", closedDateField);
-                if (sourceWorkItem.ToWorkItem().Fields.Contains("Microsoft.VSTS.Common.ClosedDate"))
+                if (sourceWorkItem.ToWorkItem().Fields.Contains(FieldNames.Microsoft.VstsCommonClosedDate))
                 {
-                    Log.LogWarning("Source ClosedDate Field: ", "Microsoft.VSTS.Common.ClosedDate");
+                    Log.LogWarning("Source ClosedDate Field: ", FieldNames.Microsoft.VstsCommonClosedDate);
                 }
-                if (sourceWorkItem.ToWorkItem().Fields.Contains("System.ClosedDate"))
+                if (sourceWorkItem.ToWorkItem().Fields.Contains(FieldNames.System.ClosedDate))
                 {
-                    Log.LogWarning("Source ClosedDate Field: ", "System.ClosedDate");
+                    Log.LogWarning("Source ClosedDate Field: ", FieldNames.System.ClosedDate);
                 }
-                if (targetWorkItem.ToWorkItem().Fields.Contains("Microsoft.VSTS.Common.ClosedDate"))
+                if (targetWorkItem.ToWorkItem().Fields.Contains(FieldNames.Microsoft.VstsCommonClosedDate))
                 {
-                    Log.LogWarning("Target ClosedDate Field: ", "Microsoft.VSTS.Common.ClosedDate");
+                    Log.LogWarning("Target ClosedDate Field: ", FieldNames.Microsoft.VstsCommonClosedDate);
                 }
-                if (targetWorkItem.ToWorkItem().Fields.Contains("System.ClosedDate"))
+                if (targetWorkItem.ToWorkItem().Fields.Contains(FieldNames.System.ClosedDate))
                 {
-                    Log.LogWarning("Target ClosedDate Field: ", "System.ClosedDate");
+                    Log.LogWarning("Target ClosedDate Field: ", FieldNames.System.ClosedDate);
                 }
             }
-
         }
 
         private bool SkipRevisionWithInvalidIterationPath(WorkItemData targetWorkItemData)
@@ -923,7 +910,7 @@ namespace MigrationTools.Processors
                 return false;
             }
 
-            return ValidateRevisionField(targetWorkItemData, "System.IterationPath");
+            return ValidateRevisionField(targetWorkItemData, FieldNames.System.IterationPath);
         }
 
         private bool SkipRevisionWithInvalidAreaPath(WorkItemData targetWorkItemData)
@@ -933,7 +920,7 @@ namespace MigrationTools.Processors
                 return false;
             }
 
-            return ValidateRevisionField(targetWorkItemData, "System.AreaPath"); ;
+            return ValidateRevisionField(targetWorkItemData, FieldNames.System.AreaPath);
         }
 
         private bool ValidateRevisionField(WorkItemData targetWorkItemData, string fieldReferenceName)

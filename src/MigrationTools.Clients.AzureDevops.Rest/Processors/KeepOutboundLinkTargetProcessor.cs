@@ -110,9 +110,9 @@ namespace MigrationTools.Clients.AzureDevops.Rest.Processors
                         }
 
                         var linkToAdd = relation.Rel;
-                        if (relation.Rel is "System.LinkTypes.Remote.Dependency-Reverse")
+                        if (relation.Rel is FieldNames.System.LinkTypesRemoteDependency_Reverse)
                         {
-                            linkToAdd = "System.LinkTypes.Dependency-Reverse";
+                            linkToAdd = FieldNames.System.LinkTypesDependency_Reverse;
                         }
                         var linkToWorkitem = $"{relationValues.org}/{relationValues.project}_workitems/edit/{relationValues.targetId}";
                         uniqueRelationTargets.Add(linkToWorkitem);

@@ -16,7 +16,7 @@ namespace MigrationTools.Tools
         public void SetExampleConfigDefaults()
         {
             ApplyTo = new List<string>() { "*" };
-            sourceField = "System.Status";
+            sourceField = FieldNames.System.Status;
             pattern = "(Active|Resolved)";
             formatExpression = "Status: {0}";
         }

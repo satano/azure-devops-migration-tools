@@ -59,7 +59,7 @@ namespace MigrationTools.Processors
 
         public TfsTestPlansAndSuitesMigrationProcessor(IOptions<TfsTestPlansAndSuitesMigrationProcessorOptions> options, TfsCommonTools tfsCommonTools, ProcessorEnricherContainer processorEnrichers, IServiceProvider services, ITelemetryLogger telemetry, ILogger<Processor> logger) : base(options, tfsCommonTools, processorEnrichers, services, telemetry, logger)
         {
-       
+
         }
 
         new TfsTestPlansAndSuitesMigrationProcessorOptions Options => (TfsTestPlansAndSuitesMigrationProcessorOptions)base.Options;
@@ -608,7 +608,7 @@ namespace MigrationTools.Processors
         {
             Log.LogDebug("TestPlansAndSuitesMigrationContext::FindTestPlan");
             ITestPlan testPlan = (from p in _targetTestStore.Project.TestPlans.Query("Select * From TestPlan") where p.Name == planName select p).SingleOrDefault();
- 
+
             if (testPlan != null)
             {
                 Log.LogDebug("TestPlansAndSuitesMigrationContext::FindTestPlan:: FOUND Test Plan with {name}", planName);
@@ -645,7 +645,7 @@ namespace MigrationTools.Processors
         {
             var sourceWI = Source.WorkItems.GetWorkItem(sourceWIId.ToString());
             var targetWI = Target.WorkItems.GetWorkItem(targetWIId.ToString());
-            targetWI.ToWorkItem().Fields["System.AssignedTo"].Value = sourceWI.ToWorkItem().Fields["System.AssignedTo"].Value;
+            targetWI.ToWorkItem().Fields[FieldNames.System.AssignedTo].Value = sourceWI.ToWorkItem().Fields[FieldNames.System.AssignedTo].Value;
             targetWI.SaveToAzureDevOps();
         }
 
@@ -911,7 +911,7 @@ namespace MigrationTools.Processors
             {
                 Log.LogError("Unable to ApplyConfigurationsAndAssignTesters: When loading the test plan again with the name it was found that they do not match!");
             }
-           
+
             ///////////////////////////////////////////////
         }
 

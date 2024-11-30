@@ -77,9 +77,9 @@ namespace MigrationTools.Tools
             {
                 ProcessFieldMapList(source, target, fieldMapps["*"]);
             }
-            if (fieldMapps.ContainsKey(source.Fields["System.WorkItemType"].Value.ToString()))
+            if (fieldMapps.ContainsKey(source.Fields[FieldNames.System.WorkItemType].Value.ToString()))
             {
-                ProcessFieldMapList(source, target, fieldMapps[source.Fields["System.WorkItemType"].Value.ToString()]);
+                ProcessFieldMapList(source, target, fieldMapps[source.Fields[FieldNames.System.WorkItemType].Value.ToString()]);
             }
         }
 
@@ -89,9 +89,9 @@ namespace MigrationTools.Tools
             {
                 ProcessFieldMapList(target, target, fieldMapps["*"]);
             }
-            if (fieldMapps.ContainsKey(target.Fields["System.WorkItemType"].Value.ToString()))
+            if (fieldMapps.ContainsKey(target.Fields[FieldNames.System.WorkItemType].Value.ToString()))
             {
-                ProcessFieldMapList(target, target, fieldMapps[target.Fields["System.WorkItemType"].Value.ToString()]);
+                ProcessFieldMapList(target, target, fieldMapps[target.Fields[FieldNames.System.WorkItemType].Value.ToString()]);
             }
         }
 

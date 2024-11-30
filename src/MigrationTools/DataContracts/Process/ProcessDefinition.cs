@@ -235,8 +235,8 @@ namespace MigrationTools.DataContracts.Process
             switch (ReferenceName)
             {
 
-                case "System.AreaId":
-                case "System.IterationId":
+                case FieldNames.System.AreaId:
+                case FieldNames.System.IterationId:
                     return new
                     {
                         ReferenceName,

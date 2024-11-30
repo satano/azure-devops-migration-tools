@@ -15,7 +15,7 @@ namespace MigrationTools.Tools
         public void SetExampleConfigDefaults()
         {
             ApplyTo = new List<string>() { "*" };
-            targetField = "System.Description";
+            targetField = FieldNames.System.Description;
         }
     }
 }

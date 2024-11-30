@@ -18,8 +18,8 @@ namespace MigrationTools.Tools
         public void SetExampleConfigDefaults()
         {
             ApplyTo = new List<string>() { "*" };
-            sourceField = "System.Status";
-            targetField = "System.Status";
+            sourceField = FieldNames.System.Status;
+            targetField = FieldNames.System.Status;
             defaultValue = "New";
             valueMapping = new Dictionary<string, string>
             {

@@ -65,7 +65,7 @@ namespace MigrationTools.Processors
                     path = string.Format(@"Teams\{0}", team.Name.Replace(" ", "-"));
                 }
                 Log.LogInformation(" and new path is {0}", path);
-                //me.AddFieldMap("*", new RegexFieldMap("KM.Simulation.Team", "System.AreaPath", @"^Project - ([a-zA-Z ]*)", @"Nemo\Projects\$1"));
+                //me.AddFieldMap("*", new RegexFieldMap("KM.Simulation.Team", FieldNames.SystemAreaPath, @"^Project - ([a-zA-Z ]*)", @"Nemo\Projects\$1"));
 
                 string[] bits = path.Split(char.Parse(@"\"));
 

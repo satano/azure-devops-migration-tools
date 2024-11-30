@@ -16,13 +16,13 @@ namespace MigrationTools.Tools
 
         public void SetExampleConfigDefaults()
         {
-            ApplyTo = new List<string> { "System.Title" };
+            ApplyTo = new List<string> { FieldNames.System.Title };
             sourceFields = new List<string>
             {
-                "System.Description",
-                "System.Status"
+                FieldNames.System.Description,
+                FieldNames.System.Status
             };
-            targetField = "System.Description";
+            targetField = FieldNames.System.Description;
             formatExpression = "{0} \n {1}";
 
         }
