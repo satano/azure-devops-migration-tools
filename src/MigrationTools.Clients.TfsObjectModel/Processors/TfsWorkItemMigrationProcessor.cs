@@ -366,29 +366,29 @@ namespace MigrationTools.Processors
         {
             _ignore = new List<string>
             {
-                FieldNames.System.Rev,
-                FieldNames.System.AreaId,
-                FieldNames.System.IterationId,
-                FieldNames.System.Id,
-                FieldNames.System.Parent,
-                FieldNames.System.RevisedDate,
-                FieldNames.System.AuthorizedAs,
-                FieldNames.System.AttachedFileCount,
-                FieldNames.System.TeamProject,
-                FieldNames.System.NodeName,
-                FieldNames.System.RelatedLinkCount,
-                FieldNames.System.WorkItemType,
                 FieldNames.Microsoft.VstsCommonStateChangeDate,
-                FieldNames.System.ExternalLinkCount,
-                FieldNames.System.HyperLinkCount,
-                FieldNames.System.Watermark,
+                FieldNames.Slb.SwtDateOfClientFeedback,
+                FieldNames.System.AreaId,
+                FieldNames.System.AttachedFileCount,
+                FieldNames.System.AuthorizedAs,
                 FieldNames.System.AuthorizedDate,
                 FieldNames.System.BoardColumn,
                 FieldNames.System.BoardColumnDone,
                 FieldNames.System.BoardLane,
-                FieldNames.Slb.SwtDateOfClientFeedback,
                 FieldNames.System.CommentCount,
+                FieldNames.System.ExternalLinkCount,
+                FieldNames.System.HyperLinkCount,
+                FieldNames.System.Id,
+                FieldNames.System.IterationId,
+                FieldNames.System.NodeName,
+                FieldNames.System.Parent,
+                FieldNames.System.RelatedLinkCount,
                 FieldNames.System.RemoteLinkCount,
+                FieldNames.System.Rev,
+                FieldNames.System.RevisedDate,
+                FieldNames.System.TeamProject,
+                FieldNames.System.Watermark,
+                FieldNames.System.WorkItemType,
             };
         }
 
@@ -397,7 +397,6 @@ namespace MigrationTools.Processors
         {
             var oldWorkItem = oldWorkItemData.ToWorkItem();
             var newWorkItem = newWorkItemData.ToWorkItem();
-            var fieldMappingTimer = Stopwatch.StartNew();
 
             if (newWorkItem.IsPartialOpen || !newWorkItem.IsOpen)
             {
@@ -405,10 +404,6 @@ namespace MigrationTools.Processors
             }
 
             newWorkItem.Title = oldWorkItem.Title;
-            if (newWorkItem.Fields.Contains(FieldNames.Microsoft.VstsCommonClosedDate) && newWorkItem.Fields[FieldNames.Microsoft.VstsCommonClosedDate].IsEditable)
-            {
-                newWorkItem.Fields[FieldNames.Microsoft.VstsCommonClosedDate].Value = oldWorkItem.Fields[FieldNames.Microsoft.VstsCommonClosedDate].Value;
-            }
             newWorkItem.State = oldWorkItem.State;
             if (newWorkItem.Fields.Contains(FieldNames.Microsoft.VstsCommonClosedDate) && newWorkItem.Fields[FieldNames.Microsoft.VstsCommonClosedDate].IsEditable)
             {
@@ -416,6 +411,23 @@ namespace MigrationTools.Processors
             }
             newWorkItem.Reason = oldWorkItem.Reason;
 
+            PopulateFields(oldWorkItemData, oldWorkItem, newWorkItem);
+            PopulateNodeStructure(oldWorkItem, newWorkItem);
+
+            switch (destType)
+            {
+                case "Test Case":
+                    PopulateTestCase(oldWorkItem, newWorkItem);
+                    break;
+            }
+
+            NormalizeBacklogPriority(newWorkItem);
+
+            newWorkItem.Description = oldWorkItem.Description;
+        }
+
+        private void PopulateFields(WorkItemData oldWorkItemData, WorkItem oldWorkItem, WorkItem newWorkItem)
+        {
             foreach (Field f in oldWorkItem.Fields)
             {
                 CommonTools.UserMapping.MapUserIdentityField(f);
@@ -447,10 +459,12 @@ namespace MigrationTools.Processors
 
                 }
             }
+        }
 
+        private void PopulateNodeStructure(WorkItem oldWorkItem, WorkItem newWorkItem)
+        {
             if (CommonTools.NodeStructure.Enabled)
             {
-
                 newWorkItem.AreaPath = CommonTools.NodeStructure.GetNewNodeName(oldWorkItem.AreaPath, TfsNodeStructureType.Area);
                 newWorkItem.IterationPath = CommonTools.NodeStructure.GetNewNodeName(oldWorkItem.IterationPath, TfsNodeStructureType.Iteration);
             }
@@ -458,26 +472,22 @@ namespace MigrationTools.Processors
             {
                 Log.LogWarning("WorkItemMigrationContext::PopulateWorkItem::nodeStructureEnricher::Disabled! This needs to be set to true!");
             }
+        }
 
-            switch (destType)
-            {
-                case "Test Case":
-                    newWorkItem.Fields[FieldNames.Microsoft.VstsTcmSteps].Value = oldWorkItem.Fields[FieldNames.Microsoft.VstsTcmSteps].Value;
-                    newWorkItem.Fields[FieldNames.Microsoft.VstsCommonPriority].Value =
-                        oldWorkItem.Fields[FieldNames.Microsoft.VstsCommonPriority].Value;
-                    break;
-            }
+        private static void PopulateTestCase(WorkItem oldWorkItem, WorkItem newWorkItem)
+        {
+            newWorkItem.Fields[FieldNames.Microsoft.VstsTcmSteps].Value = oldWorkItem.Fields[FieldNames.Microsoft.VstsTcmSteps].Value;
+            newWorkItem.Fields[FieldNames.Microsoft.VstsCommonPriority].Value =
+                oldWorkItem.Fields[FieldNames.Microsoft.VstsCommonPriority].Value;
+        }
 
+        private static void NormalizeBacklogPriority(WorkItem newWorkItem)
+        {
             if (newWorkItem.Fields.Contains(FieldNames.Microsoft.VstsCommonBacklogPriority)
                 && newWorkItem.Fields[FieldNames.Microsoft.VstsCommonBacklogPriority].Value != null
                 && !IsNumeric(newWorkItem.Fields[FieldNames.Microsoft.VstsCommonBacklogPriority].Value.ToString(),
                     NumberStyles.Any))
                 newWorkItem.Fields[FieldNames.Microsoft.VstsCommonBacklogPriority].Value = 10;
-
-            var description = new StringBuilder();
-            description.Append(oldWorkItem.Description);
-            newWorkItem.Description = description.ToString();
-            fieldMappingTimer.Stop();
         }
 
         private void ProcessHTMLFieldAttachements(WorkItemData targetWorkItem)
