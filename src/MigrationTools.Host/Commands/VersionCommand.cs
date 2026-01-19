@@ -16,7 +16,6 @@ namespace MigrationTools.Host.Commands
     internal class VersionCommand : CommandBase<VersionCommandSettings>
     {
         private readonly IMigrationToolVersion _migrationToolVersion;
-        private readonly ILogger<CommandBase<VersionCommandSettings>> _logger;
 
         public VersionCommand(
             IHostApplicationLifetime appLifetime,
@@ -31,7 +30,6 @@ namespace MigrationTools.Host.Commands
             : base(appLifetime, services, detectOnlineService, detectVersionService, logger, telemetryLogger, migrationToolVersion, configuration, activitySource)
         {
             _migrationToolVersion = migrationToolVersion;
-            _logger = logger;
         }
 
         internal override Task<int> ExecuteInternalAsync(CommandContext context, VersionCommandSettings settings)
@@ -54,7 +52,6 @@ namespace MigrationTools.Host.Commands
             catch (Exception ex)
             {
                 CommandActivity.RecordException(ex);
-                _logger.LogError(ex, "Error displaying version information");
                 return Task.FromResult(1);
             }
         }

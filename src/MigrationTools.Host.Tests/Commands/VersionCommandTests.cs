@@ -16,6 +16,12 @@ namespace MigrationTools.Host.Tests.Commands
             host = MigrationToolHost.CreateDefaultBuilder(new string[] { "version", "--skipVersionCheck" }).Build();
         }
 
+        [TestCleanup]
+        public void Cleanup()
+        {
+            host?.Dispose();
+        }
+
         [TestMethod, TestCategory("L0")]
         public void VersionCommand_ServiceResolution_ShouldSucceed()
         {
